@@ -52,6 +52,8 @@ class Data():
             can be set to a fixed integer to get repetitive results on the
             same data with multiple runs of analyses. Otherwise a random
             seed is set as default.
+        verbose : bool [optional]
+            if True, messages are printed to console (default=False)
 
     Attributes:
         data : numpy array
@@ -68,10 +70,11 @@ class Data():
             initial state of the seed for shuffled permutations
     """
 
-    def __init__(self, data=None, dim_order='psr', normalise=True, seed=None):
+    def __init__(self, data=None, dim_order='psr', normalise=True, seed=None, verbose=False):
         np.random.seed(seed)
         self.initial_state = np.random.get_state()
         self.normalise = normalise
+        self.verbose = verbose
         if data is not None:
             self.set_data(data, dim_order)
 
@@ -128,7 +131,8 @@ class Data():
 
     @data.deleter
     def data(self):
-        print('overwriting existing data')
+        if self.verbose:
+            print('overwriting existing data')
         del(self._data)
 
     def set_data(self, data, dim_order):
@@ -154,9 +158,10 @@ class Data():
         # set data.
         data_ordered = self._reorder_data(data, dim_order)
         self._set_data_size(data_ordered)
-        print('Adding data with properties: {0} processes, {1} samples, {2} '
-              'replications'.format(self.n_processes, self.n_samples,
-                                    self.n_replications))
+        if self.verbose:
+            print('Adding data with properties: {0} processes, {1} samples, {2} '
+                'replications'.format(self.n_processes, self.n_samples,
+                                        self.n_replications))
         try:
             delattr(self, 'data')
         except AttributeError:
@@ -259,8 +264,9 @@ class Data():
             return None, None
         # Check if requested indices are smaller than the current_value.
         if not all(np.array([x[1] for x in idx_list]) <= current_value[1]):
-            print('Index list: {0}\ncurrent value: {1}'.format(idx_list,
-                                                               current_value))
+            if self.verbose:
+                print('Index list: {0}\ncurrent value: {1}'.format(idx_list,
+                                                                current_value))
             raise RuntimeError('All indices for which data is retrieved must '
                                ' be smaller than the current value.')
 
@@ -357,8 +363,9 @@ class Data():
         """
         # Check if requested indices are smaller than the current_value.
         if not offset_samples <= self.n_samples:
-            print('Offset {0} must be smaller than number of samples in the '
-                  ' data ({1})'.format(offset_samples, self.n_samples))
+            if self.verbose:
+                print('Offset {0} must be smaller than number of samples in the '
+                    ' data ({1})'.format(offset_samples, self.n_samples))
             raise RuntimeError('Offset must be smaller than no. samples.')
 
         # Shuffle the replication order if requested. This creates surrogate
@@ -833,7 +840,7 @@ class Data():
                                   'smaller than the number of samples in the '
                                   'time series ({1}).'.format(max_shift, n))
         shift = np.random.randint(low=1, high=max_shift + 1)
-        if VERBOSE:
+        if self.verbose:
             print("replications are shifted by {0} samples".format(shift))
         return np.hstack((np.arange(n - shift, n),
                           np.arange(n - shift))), shift
