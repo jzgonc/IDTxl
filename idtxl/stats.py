@@ -1571,9 +1571,10 @@ def _check_permute_in_time(analysis_setup, data, n_perm):
 
     if (not analysis_setup.settings['permute_in_time'] and
             not _sufficient_replications(data, n_perm)):
-        print('\nWARNING: Number of replications is not sufficient to '
-              'generate the desired number of surrogates. Permuting samples '
-              'in time instead.')
+        if analysis_setup.settings['verbose']:
+            print('\nWARNING: Number of replications is not sufficient to '
+                'generate the desired number of surrogates. Permuting samples '
+                'in time instead.')
         analysis_setup.settings['permute_in_time'] = True
 
     if analysis_setup.settings['permute_in_time']:

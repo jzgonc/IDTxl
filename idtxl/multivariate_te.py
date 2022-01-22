@@ -280,13 +280,17 @@ class MultivariateTE(NetworkInferenceTE, NetworkInferenceMultivariate):
         self._initialise(settings, data, sources, target)
 
         # Main algorithm.
-        print('\n---------------------------- (1) include target candidates')
+        if self.settings['verbose']:
+            print('\n---------------------------- (1) include target candidates')
         self._include_target_candidates(data)
-        print('\n---------------------------- (2) include source candidates')
+        if self.settings['verbose']:
+            print('\n---------------------------- (2) include source candidates')
         self._include_source_candidates(data)
-        print('\n---------------------------- (3) prune source candidate')
+        if self.settings['verbose']:
+            print('\n---------------------------- (3) prune source candidate')
         self._prune_candidates(data)
-        print('\n---------------------------- (4) final statistics')
+        if self.settings['verbose']:
+            print('\n---------------------------- (4) final statistics')
         self._test_final_conditional(data)
 
         # Clean up and return results.
