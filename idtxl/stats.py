@@ -67,7 +67,8 @@ def ais_fdr(settings=None, *results):
                     n_perm, results_comb.settings.n_perm_mi)
 
     if pval.size == 0:
-        print('FDR correction: no links in final results ...\n')
+        if settings['verbose']:
+            print('FDR correction: no links in final results ...\n')
         results_comb._add_fdr(fdr=None, alpha=alpha, constant=constant)
         return results_comb
 
@@ -184,7 +185,8 @@ def network_fdr(settings=None, *results):
                     n_perm, results_comb.settings.n_perm_max_seq)
 
     if pval.size == 0:
-        print('No links in final results ...')
+        if settings['verbose']:
+            print('No links in final results ...')
         results_comb._add_fdr(
             fdr=None, alpha=alpha, correct_by_target=correct_by_target,
             constant=constant)
@@ -195,10 +197,11 @@ def network_fdr(settings=None, *results):
     # If the number of permutations for calculating p-values for individual
     # variables is too low, return without performing any correction.
     if (1 / min(n_perm)) > thresh[0]:
-        print('WARNING: Number of permutations (''n_perm_max_seq'') for at '
-              'least one target is too low to allow for FDR correction '
-              '(FDR-threshold: {0:.4f}, min. theoretically possible p-value: '
-              '{1}).'.format(thresh[0], 1 / min(n_perm)))
+        if settings['verbose']:
+            print('WARNING: Number of permutations (''n_perm_max_seq'') for at '
+                'least one target is too low to allow for FDR correction '
+                '(FDR-threshold: {0:.4f}, min. theoretically possible p-value: '
+                '{1}).'.format(thresh[0], 1 / min(n_perm)))
         results_comb._add_fdr(
             fdr=None, alpha=alpha, correct_by_target=correct_by_target,
             constant=constant)

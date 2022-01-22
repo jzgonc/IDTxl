@@ -465,8 +465,9 @@ class NetworkInferenceTE(NetworkInference):
         # If no candidates were found in the target's past, add at least one
         # sample so we are still calculating a proper TE.
         if not sources_found:
-            print('\nNo informative sources in the target\'s past - '
-                  'adding target sample with lag 1.')
+            if self.settings['verbose']:
+                print('\nNo informative sources in the target\'s past - '
+                    'adding target sample with lag 1.')
             idx = (self.current_value[0], self.current_value[1] - 1)
             realisations = data.get_realisations(self.current_value, [idx])[0]
             self._append_selected_vars([idx], realisations)
@@ -646,12 +647,14 @@ class NetworkInferenceBivariate(NetworkInference):
             [s[0] for s in self.selected_vars_sources])
         for source in significant_sources:
             # Find selected past variables for current source
-            print('selected vars sources {0}'.format(
-                self.selected_vars_sources))
+            if self.settings['verbose']:
+                print('selected vars sources {0}'.format(
+                    self.selected_vars_sources))
             source_vars = [s for s in self.selected_vars_sources if
                            s[0] == source]
-            print('selected candidates current source: {0}'.format(
-                        self._idx_to_lag(source_vars)))
+            if self.settings['verbose']:
+                print('selected candidates current source: {0}'.format(
+                            self._idx_to_lag(source_vars)))
             # If only a single variable was selected for the current source, no
             # pruning is necessary. The minimum statistic would be equal to the
             # maximum statistic for this variable.
@@ -764,7 +767,8 @@ class NetworkInferenceBivariate(NetworkInference):
                     self._remove_selected_var(min_candidate)
                     source_vars.pop(np.argmin(temp_te))
                     if len(source_vars) == 0:
-                        print('No remaining candidates after pruning.')
+                        if self.settings['verbose']:
+                            print('No remaining candidates after pruning.')
                     if self.settings['write_ckp']:
                         self._write_checkpoint()
                 else:
@@ -984,6 +988,7 @@ class NetworkInferenceMultivariate(NetworkInference):
                 #     print(' -- not significant\n')
                 self._remove_selected_var(min_candidate)
                 if len(self.selected_vars_sources) == 0:
+                    if self.settings['verbose']:
                         print('No remaining candidates after pruning.')
                 if self.settings['write_ckp']:
                     self._write_checkpoint()
